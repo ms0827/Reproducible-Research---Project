@@ -1,0 +1,131 @@
+---
+title: 'Reproducible Research: Peer Assessment 1'
+date: "Febrero 2019"
+output:
+  html_document: default
+  pdf_document: default
+---
+
+# Data
+
+steps: Number of steps taking in a 5-minute interval (missing values are coded as NA).
+Número de pasos que se toman en un intervalo de 5 minutos.
+
+date: The date on which the measurement was taken in YYYY-MM-DD format.
+
+interval: Identifier for the 5-minute interval in which measurement was taken.
+Identificador del intervalo de 5 minutos en el que se realizó la medición.
+
+The dataset is stored in a comma-separated-value (CSV) file and there are a total of 17,568 observations in this dataset.
+
+```{r, comment="", warning=F, message=F, echo=F}
+rm(list = ls())
+
+# Library
+
+library(ggplot2)
+library(plyr)
+library(lattice)
+
+# Loading and preprocessing the data
+
+activity <- read.csv("activity.csv")
+activity$date <- as.Date(activity$date, "%Y-%m-%d")
+pasos <- with(activity, tapply(steps, date, sum))
+steps_day <- aggregate(steps ~ date, data = activity, sum, na.rm = TRUE)
+steps_interval <- aggregate(steps ~ interval, data = activity, mean, na.rm = TRUE)
+```
+
+## What is mean total number of steps taken per day?
+¿Cuál es el número total medio de pasos tomados por día?
+
+```{r, comment="", warning=F, message=F, echo=F}
+hist(steps_day$steps,
+     xlab = "Steps taken Daily",
+     ylab = "Frequency",
+     main = "Total Number of Steps Taken per Day",
+     col = "pink")
+
+dev.copy(png, file = "plot.1.png", height = 480, width = 480)
+dev.off()
+
+summary(steps_day$steps)
+
+mean <- mean(steps_day$steps, na.rm = TRUE)
+median <- median(steps_day$steps, na.rm = TRUE)
+
+mean
+median
+```
+
+## What is the average daily activity pattern?
+¿Cuál es el patrón de actividad diaria promedio?
+
+```{r, comment="", warning=F, message=F, echo=F}
+str(activity)
+
+plot(steps ~ interval, data = steps_interval,
+     type="l", 
+     lwd=2, 
+     xlab="Time", 
+     ylab="Number of steps", 
+     main="Average Daily Activity Pattern")
+
+dev.copy(png, file = "plot.2.png", height = 480, width = 480)
+dev.off() 
+```
+
+## Imputing missing values
+Imputando valores perdidos
+
+```{r, comment="", warning=F, message=F, echo=F}
+value_na <- !complete.cases(activity)
+num_na <- sum(is.na(activity))
+num_na
+
+data <- activity[value_na == TRUE, ]
+data[, 1] <- steps_interval$steps
+data2 <- rbind(activity[complete.cases(activity), ], data)
+steps_day2 <- aggregate(steps ~ date, data = data2, sum)
+
+hist(steps_day2$steps,
+     xlab = "Day",
+     ylab = "Frequency",
+     main = "Total Steps per Day",
+     col = "light blue")
+
+dev.copy(png, file = "plot.3.png", height = 480, width = 480)
+dev.off() 
+
+summary(steps_day2)
+
+mean <- mean(steps_day2$steps, na.rm = TRUE)
+median <- median(steps_day2$steps, na.rm = TRUE)
+
+mean
+median
+```
+
+## Are there differences in activity patterns between weekdays and weekends?
+
+```{r, comment="", warning=F, message=F, echo=F}
+
+weekdays <- weekdays(data2$date)
+data2$weekdays <- ifelse(weekdays == "domingo" | weekdays == "sábado", 
+    "Weekend", "Weekday")
+
+str(data2)
+
+steps_weekd <- aggregate(data2$steps, by = list(data2$interval, data2$weekdays), mean)
+names(steps_weekd) <- c("interval", "weekdays", "steps")
+
+xyplot(steps ~ interval | weekdays, steps_weekd,
+       type = "l",
+       layout = c(1, 2),
+       xlab = "Interval",
+       ylab = "Number of steps",
+       main = "Weekends and Weekdays")
+
+dev.copy(png, file = "plot.4.png", height = 480, width = 480)
+dev.off() 
+```
