@@ -9,12 +9,12 @@ output:
 # Data
 
 steps: Number of steps taking in a 5-minute interval (missing values are coded as NA).
-Número de pasos que se toman en un intervalo de 5 minutos.
+NÃºmero de pasos que se toman en un intervalo de 5 minutos.
 
 date: The date on which the measurement was taken in YYYY-MM-DD format.
 
 interval: Identifier for the 5-minute interval in which measurement was taken.
-Identificador del intervalo de 5 minutos en el que se realizó la medición.
+Identificador del intervalo de 5 minutos en el que se realizÃ³ la mediciÃ³n.
 
 The dataset is stored in a comma-separated-value (CSV) file and there are a total of 17,568 observations in this dataset.
 
@@ -37,7 +37,7 @@ steps_interval <- aggregate(steps ~ interval, data = activity, mean, na.rm = TRU
 ```
 
 ## What is mean total number of steps taken per day?
-¿Cuál es el número total medio de pasos tomados por día?
+Â¿CuÃ¡l es el nÃºmero total medio de pasos tomados por dÃ­a?
 
 ```{r, comment="", warning=F, message=F, echo=F}
 hist(steps_day$steps,
@@ -59,7 +59,7 @@ median
 ```
 
 ## What is the average daily activity pattern?
-¿Cuál es el patrón de actividad diaria promedio?
+Â¿CuÃ¡l es el patrÃ³n de actividad diaria promedio?
 
 ```{r, comment="", warning=F, message=F, echo=F}
 str(activity)
@@ -111,7 +111,7 @@ median
 ```{r, comment="", warning=F, message=F, echo=F}
 
 weekdays <- weekdays(data2$date)
-data2$weekdays <- ifelse(weekdays == "domingo" | weekdays == "sábado", 
+data2$weekdays <- ifelse(weekdays == "domingo" | weekdays == "sÃ¡bado", 
     "Weekend", "Weekday")
 
 str(data2)
